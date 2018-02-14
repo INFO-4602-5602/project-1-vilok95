@@ -4,36 +4,60 @@
 <style type="text/css" href="project0.css"></style>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 <!--Put your D3 import statement between these two lines-->
-    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <script src="https://d3js.org/d3.v4.min.js"></script>
 <!--Put your D3 import statement between these two lines-->
 </head>
 
 <body>
-	<div id="partOne">
+    <div id="partOne">
         <h1>Part One: </h1>
-	</div>
+    </div>
     
     <div id="partTwo">
         <h1>Part Two: </h1>
         <div id="barchart">
         </div>
-	</div>
+    </div>
     
     <div id="partThree">
         <h1>Part Three &amp; Four: </h1>
         <div id="scatterplot">
             <p id="scatterLabel"></p>
         </div>
-	</div>
+    </div>
     
     <div id="partFive">
         <h1>Part Five: </h1>
         <div id="scatterplotSet">
         </div>
-	</div>
+    </div>
     
     <script type="text/javascript">
         // Put your part one code here ***********************
+        //For this part I just based my code off of the tutorial
+        d3.csv("data/anscombe_I.csv", function(error, data1){
+            if (error) throw error;
+            checkDataset(data1);
+
+        });
+        d3.csv("data/anscombe_II.csv", function(error, data2){
+            if (error) throw error;
+            checkDataset(data2);
+
+        });
+        d3.csv("data/anscombe_III.csv", function(error, data3){
+            if (error) throw error;
+            checkDataset(data3);
+
+        });
+        d3.csv("data/anscombe_IV.csv", function(error, data4){
+            if (error) throw error;
+            checkDataset(data4);
+
+        });
+
+        
+
 
         
         // Leave this to test your data uploading. All data uploading should be above this line
@@ -45,9 +69,132 @@
         }
         
         // Put your part two code here ***********************
-        
+        //For this part I again went off of the tutorial
+        var w = 700; // Width of our visualization
+        var h = 500; // Height of our visualization
+        var xOffset = 40; // Space for x-axis labels
+        var yOffset = 100; // Space for y-axis labels
+        var margin = 10; // Margin around visualization
+        var vals = ['x', 'y']; // List of data attributes
+        var xVal = vals[0]; // Value to plot on x-axis
+        var yVal = vals[1]; // Value to plot on y-axis
+
+
+        // set the dimensions and margins of the graph
+        var margin = {top: 20, right: 20, bottom: 30, left: 50};
+        var width = 960 - margin.left - margin.right;
+        var height = 500 - margin.top - margin.bottom;
+
+        // set the ranges
+        var x = d3.scaleLinear().range([0, width]);
+        var y = d3.scaleLinear().range([height, 0]);
+        var svg = d3.select("#partTwo").append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+            .attr("transform", "translate("+margin.left + "," + margin.top +")");
+        //Load the data
+        d3.csv("data/anscombe_I.csv", function(error, data){
+            if (error) throw error;
+    
+         // Scale the range
+            x.domain(d3.extent(data, function(d) {return +d[xVal];}));
+            y.domain([0, d3.max(data, function(d) {return d[yVal];})]);
+      
+            // Add the scatterplot points
+            svg.selectAll("circle")
+                .data(data)
+                .enter()
+                .append("circle")
+                .attr("r", 5)
+                .attr("cx", function(d){return x(d[xVal]);})
+                .attr("cy", function(d){return y(d[yVal]);})
+                .attr("fill","blue")
+                
+                 
+
+            // Add the X Axis
+            svg.append("g")
+                .attr("transform", "translate(0, " + height +")")
+                .call(d3.axisBottom(x));
+
+             // Add the Y Axis
+             svg.append("g")
+                 .call(d3.axisLeft(y));
+    
+            //Add text labels
+            var xLabel = svg.append("text")
+                            .attr("class", "label")
+                            .text(xVal)
+                            .attr("x", width - 20)
+                            .attr("y", height - 10);
+
+            var yLabel = svg.append("text")
+                            .attr("class", "label")
+                            .text(yVal)
+                            .attr("y", -10)
+                            .attr("transform", "rotate(90)")
+                            .style("text-anchor", "start");
+});
         // Put your part three & four code here ***********************
         
+        var margin = {top: 20, right: 20, bottom: 30, left: 50};
+        var width = 600 - margin.left - margin.right;
+        var height = 500 - margin.top - margin.bottom;
+        var x = d3.scaleLinear().range([0, width]);
+        var y = d3.scaleLinear().range([height, 0]);
+        //Now we have to create a variable for the line and correspond it with xVal and yVal
+        var lineGraph = d3.line()
+                          .x(function(d){return x(d[xVal]);})
+                          .y(function(d){return y(d[yVal]);});
+        //Now create another svg with the id tag partThree
+        var svg2 = d3.select("#partThree").append("svg")
+                     .attr("width", width + margin.left + margin.right)
+                     .attr("height", height + margin.top + margin.bottom)
+                     .append("g")
+                     .attr("transform", "translate("+margin.left + "," + margin.top +")");
+       //Grab the data
+        d3.csv("data/anscombe_II.csv", function(error, data){
+            if (error) throw error;
+            //Now we need to sort the x axis
+            //To do this i found help from this website: 
+            //https://www.w3schools.com/jsref/jsref_sort.asp
+            data.sort(function(a,b) {return a[xVal]-b[xVal];});
+            //Now we scale the range of data
+            x.domain(d3.extent(data, function(d) {return +d[xVal];}));
+            y.domain([0, d3.max(data, function(d) {return +d[yVal];})]);
+
+            //Now to actually creating the graph
+            //I got some help from: https://www.dashingd3js.com/svg-paths-and-d3js
+            svg2.append("path")
+                .data([data])
+                .attr("class","line")
+                .attr("d",lineGraph(data))
+                .attr("stroke","green")
+                .attr("fill","none");
+              // Add the X Axis
+            svg2.append("g")
+                .attr("transform", "translate(0, " + height +")")
+                .call(d3.axisBottom(x));
+
+            // Add the Y Axis
+            svg2.append("g")
+                .call(d3.axisLeft(y));
+    
+             //Add text labels
+            var xLabel = svg2.append("text")
+                            .attr("class", "label")
+                            .text(xVal)
+                            .attr("x", width - 20)
+                            .attr("y", height - 10);
+
+            var yLabel = svg2.append("text")
+                            .attr("class", "label")
+                            .text(yVal)
+                            .attr("y", -10)
+                            .attr("transform", "rotate(90)")
+                            .style("text-anchor", "start");
+            });
         // Put your part five code here ***********************
         
     </script>
