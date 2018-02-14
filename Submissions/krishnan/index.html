@@ -134,8 +134,7 @@
                             .text(yVal)
                             .attr("y", -10)
                             .attr("transform", "rotate(90)")
-                            .style("text-anchor", "start");
-});
+                            .style("text-anchor", "start");});
         // Put your part three & four code here ***********************
         
         var margin = {top: 20, right: 20, bottom: 30, left: 50};
@@ -156,18 +155,19 @@
        //Grab the data
         d3.csv("data/anscombe_I.csv", function(error, data){
             if (error) throw error;
-            //Now we need to sort the x axis
-            //To do this i found help from this website: 
-            //https://www.w3schools.com/jsref/jsref_sort.asp
-            data.sort(function(a,b) {return a[xVal]-b[xVal];});
             //Now we scale the range of data
             x.domain(d3.extent(data, function(d) {return +d[xVal];}));
             y.domain([0, d3.max(data, function(d) {return +d[yVal];})]);
+            //Now we need to sort this data
+            //To do this i found help from this website: 
+            //https://www.w3schools.com/jsref/jsref_sort.asp
+            //It took me a while to figure out why everything was scattered until I found this
+            data.sort(function(a,b) {return a[xVal]-b[xVal];});
 
             //Now to actually creating the graph
             //I got some help from: https://www.dashingd3js.com/svg-paths-and-d3js
             svg2.append("path")
-                .data([data])
+                .data(data)
                 .attr("class","line")
                 .attr("d",lineGraph(data))
                 .attr("stroke","green")

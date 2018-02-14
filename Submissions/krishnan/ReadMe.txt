@@ -1,5 +1,8 @@
 For this project I based a lot of my work off of the tutorial we did in class. 
 
+Citations: //https://www.w3schools.com/jsref/jsref_sort.asp
+           https://www.dashingd3js.com/svg-paths-and-d3js
+
 Part 1: This part was very simple. All we had to do was load in the data and call the function
 checkDataset. I figured this out by looking at the tutorial and seeing how we imported a 
 dataset. 
